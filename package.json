@@ -1,0 +1,32 @@
+{
+  "name": "atividade-03---testes-de-software",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "jest --watchAll"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mauboru/ATIVIDADE-03---TESTES-DE-SOFTWARE.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Mauboru/ATIVIDADE-03---TESTES-DE-SOFTWARE/issues"
+  },
+  "homepage": "https://github.com/Mauboru/ATIVIDADE-03---TESTES-DE-SOFTWARE#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "jest": "^30.3.0",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.2.2"
+  }
+}
