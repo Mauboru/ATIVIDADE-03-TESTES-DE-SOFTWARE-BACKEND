@@ -37,7 +37,7 @@ describe("Usuários", () => {
     expect(res.data.nome).toBe("João Silva");
     expect(res.data.tipo).toBe("aluno");
   });
-0
+
   test("deve retornar 400 ao criar usuário sem nome", async () => {
     try {
       await axios.post(`${api}/usuarios`, {

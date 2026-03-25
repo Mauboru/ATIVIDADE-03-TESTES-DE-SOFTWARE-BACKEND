@@ -15,6 +15,10 @@ const Livro = sequelize.define('Livro', {
     type: DataTypes.STRING(255),
     allowNull: false,
   },
+  disponivel: {
+    type: DataTypes.BOOLEAN,
+    allowNull: true
+  }
 }, {
   tableName: 'livros',
   timestamps: true,
