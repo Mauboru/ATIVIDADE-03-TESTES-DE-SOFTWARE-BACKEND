@@ -27,6 +27,7 @@
   "homepage": "https://github.com/Mauboru/ATIVIDADE-03---TESTES-DE-SOFTWARE#readme",
   "dependencies": {
     "axios": "^1.13.6",
+    "bcrypt": "^6.0.0",
     "better-sqlite3": "^12.8.0",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",

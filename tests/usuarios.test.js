@@ -103,7 +103,7 @@ describe("Usuários", () => {
     });
 
     const res = await axios.delete(`${api}/usuarios/${criado.data.id}`);
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(204);
   });
 
   test("deve retornar 404 ao deletar usuário inexistente", async () => {
