@@ -1,0 +1,1 @@
+//usem TDD e mandem bala, (podem copiar dos outros testes) o objetivo e o sistema ter um CRUD de multas com testes rodando
