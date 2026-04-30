@@ -2,9 +2,40 @@ const axios = require('axios');
 require('dotenv').config();
 const api = `http://localhost:${process.env.PORT || 3000}`;
 
-const EMPRESTIMO_ID = 444;
+let USUARIO_ID;
+let LIVRO_ID;
+let EMPRESTIMO_ID;
 
 describe("Multas", () => {
+    beforeAll(async () => {
+        const userRes = await axios.post(`${api}/usuarios`, {
+            nome: "Usuario Teste Multa",
+            email: `multa_${Date.now()}@email.com`,
+            senha: "123",
+            tipo: "aluno"
+        });
+        USUARIO_ID = userRes.data.id;
+
+        const livroRes = await axios.post(`${api}/livros`, {
+            titulo: "Livro Teste Multa",
+            autor: "Autor Teste",
+            disponivel: true
+        });
+        LIVRO_ID = livroRes.data.id;
+
+        const emprestimoRes = await axios.post(`${api}/emprestimos`, {
+            usuario_id: USUARIO_ID,
+            livro_id: LIVRO_ID,
+            data_devolucao_prevista: "2025-05-01"
+        });
+        EMPRESTIMO_ID = emprestimoRes.data.id;
+    });
+
+    afterAll(async () => {
+        await axios.delete(`${api}/emprestimos/${EMPRESTIMO_ID}`);
+        await axios.delete(`${api}/livros/${LIVRO_ID}`);
+        await axios.delete(`${api}/usuarios/${USUARIO_ID}`);
+    });
     test("deve registrar uma nova multa", async () => {
         const res = await axios.post(`${api}/multas`, {
             emprestimo_id: EMPRESTIMO_ID,
@@ -21,7 +52,7 @@ describe("Multas", () => {
         expect(res.data).toHaveProperty("valor");
         await axios.delete(`${api}/multas/${res.data.id}`);
     });
-    
+
     test("deve retornar uma lista de multas", async () => {
         const res = await axios.get(`${api}/multas`);
         expect(res.status).toBe(200);
@@ -29,13 +60,13 @@ describe("Multas", () => {
     });
 
     test("deve deletar uma multa", async () => {
-        const multa = await axios.post(`${api}/multas`, { 
+        const multa = await axios.post(`${api}/multas`, {
             emprestimo_id: EMPRESTIMO_ID,
             quitado: false,
             tipo: "danificado",
             obs: "mordeu o livro",
             valor: 12,
-         });
+        });
         const res = await axios.delete(`${api}/multas/${multa.data.id}`);
         expect(res.status).toBe(204);
     });
@@ -46,29 +77,29 @@ describe("Multas", () => {
         } catch (error) {
             expect(error.response.status).toBe(404);
             expect(error.response.data.message).toBe("Essa multa não existe!");
-        }   
+        }
     });
 
     test("deve retornar uma multa pelo id", async () => {
-        const multa = await axios.post(`${api}/multas`, { 
+        const multa = await axios.post(`${api}/multas`, {
             emprestimo_id: EMPRESTIMO_ID,
             quitado: false,
             tipo: "danificado",
             obs: "mordeu o livro",
             valor: 12,
-         });
+        });
         const res = await axios.get(`${api}/multas/${multa.data.id}`);
         expect(res.status).toBe(200);
         await axios.delete(`${api}/multas/${res.data.id}`);
     });
-    
+
     test("deve retornar 404 para multa inexistente", async () => {
         try {
             await axios.get(`${api}/multas/9999`);
         } catch (error) {
             expect(error.response.status).toBe(404);
             expect(error.response.data.message).toBe("Essa multa não existe!");
-        } 
+        }
     });
 
     test("deve retornar 400 ao registrar multa sem emprestimo_id", async () => {
@@ -86,7 +117,7 @@ describe("Multas", () => {
     });
 
     test("deve quitar uma multa e retornar 200", async () => {
-        const multa = await axios.post(`${api}/multas`, { 
+        const multa = await axios.post(`${api}/multas`, {
             emprestimo_id: EMPRESTIMO_ID,
             tipo: "danificado",
             obs: "mordeu o livro",
@@ -94,11 +125,11 @@ describe("Multas", () => {
         });
         const res = await axios.put(`${api}/multas/quitar/${multa.data.id}`);
         expect(res.status).toBe(201);
-        await axios.delete(`${api}/multas/${res.data.id}`);
+        await axios.delete(`${api}/multas/${multa.data.id}`);
     });
 
     test("deve retornar 201 ao atualizar uma multa", async () => {
-        const multa = await axios.post(`${api}/multas`, { 
+        const multa = await axios.post(`${api}/multas`, {
             emprestimo_id: EMPRESTIMO_ID,
             tipo: "danificado",
             obs: "mordeu o livro",
@@ -109,32 +140,37 @@ describe("Multas", () => {
         });
         expect(res.status).toBe(201);
         expect(res.data.tipo).toBe("atraso");
-        await axios.delete(`${api}/multas/${res.data.id}`);
+        await axios.delete(`${api}/multas/${multa.data.id}`);
     });
 
-    test("deve retornar 404 ao tentar quitar multa quitada", async () => {
+    test("deve retornar 400 ao tentar quitar multa quitada", async () => {
+        expect.assertions(2);
+        const multa = await axios.post(`${api}/multas`, {
+            emprestimo_id: EMPRESTIMO_ID,
+            tipo: "danificado",
+            obs: "mordeu o livro",
+            valor: 12,
+        });
+
         try {
-            const multa = await axios.post(`${api}/multas`, { 
-                emprestimo_id: EMPRESTIMO_ID,
-                tipo: "danificado",
-                obs: "mordeu o livro",
-                valor: 12,
-            });
-            const res = await axios.put(`${api}/multas/quitar/${multa.data.id}`);
+            await axios.put(`${api}/multas/quitar/${multa.data.id}`);
+            await axios.put(`${api}/multas/quitar/${multa.data.id}`);
         } catch (error) {
-            expect(error.response.status).toBe(404);
-            expect(error.response.data.message).toBe("Multa já foi quitada!");
-        } 
+            expect(error.response.status).toBe(400);
+            expect(error.response.data.erro).toBe("Multa já foi quitada!");
+        } finally {
+            await axios.delete(`${api}/multas/${multa.data.id}`);
+        }
     });
 
     test("deve listar multas de um emprestimo específico", async () => {
-        const multa = await axios.post(`${api}/multas`, { 
+        const multa = await axios.post(`${api}/multas`, {
             emprestimo_id: EMPRESTIMO_ID,
             quitado: false,
             tipo: "danificado",
             obs: "mordeu o livro",
             valor: 12,
-         });
+        });
         const res = await axios.get(`${api}/multas/getByEmprestimo/${multa.data.emprestimo_id}`)
         expect(res.status).toBe(200);
         await axios.delete(`${api}/multas/${multa.data.id}`);
