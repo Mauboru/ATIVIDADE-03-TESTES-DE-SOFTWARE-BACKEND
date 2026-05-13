@@ -32,7 +32,7 @@ const Emprestimo = sequelize.define('Emprestimo', {
   underscored: false,
 });
 
-Emprestimo.belongsTo(Livro, { foreignKey: 'livro_id' });
+Emprestimo.belongsTo(Livro, { foreignKey: 'livro_id', onDelete: 'CASCADE' });
 Emprestimo.belongsTo(Usuario, { foreignKey: 'usuario_id' });
 
 module.exports = Emprestimo;

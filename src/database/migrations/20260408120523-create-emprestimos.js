@@ -12,7 +12,8 @@ module.exports = {
       livro_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references: { model: 'livros', key: 'id'}       
+        references: { model: 'livros', key: 'id'},
+        onDelete: 'CASCADE'       
       },
       usuario_id: {
         type: Sequelize.INTEGER,

@@ -34,5 +34,5 @@ const Multas = sequelize.define('Multas', {
   underscored: false,
 });
 
-Multas.belongsTo(Emprestimo, { foreignKey: 'emprestimo_id' });
+Multas.belongsTo(Emprestimo, { foreignKey: 'emprestimo_id', onDelete: 'CASCADE' });
 module.exports = Multas;

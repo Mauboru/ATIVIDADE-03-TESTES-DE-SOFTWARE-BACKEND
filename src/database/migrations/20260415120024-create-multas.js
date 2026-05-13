@@ -12,7 +12,8 @@ module.exports = {
       emprestimo_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references: { model: 'emprestimos', key: 'id'}       
+        references: { model: 'emprestimos', key: 'id'},
+        onDelete: 'CASCADE'       
       },
       quitado: {
         type: Sequelize.BOOLEAN,
